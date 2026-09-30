@@ -3,6 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend 2.0</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; }
+        textarea { width: 100%; height: 100px; }
+        button { margin-top: 10px; padding: 8px 20px; }
+        #sendResult { margin-top: 10px; color: green; }
+        #readResult {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            min-height: 60px;
+        }
+        .section { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frontend 2.0</h1>
+
+        <!-- Блок 1: отправка данных (из версии 1.0) -->
+        <div class="section">
+            <h2>Отправка данных</h2>
+            <form id="form">
+                <label for="text">Введите текст:</label><br>
+                <textarea id="text" name="text" required></textarea><br>
+                <button type="submit">Отправить</button>
+            </form>
+            <div id="sendResult"></div>
+        </div>
+
+        <!-- Блок 2: чтение данных (новое в версии 2.0) -->
+        <div class="section">
+            <h2>Чтение данных</h2>
+            <button id="readBtn">Получить данные</button>
+            <h3>Результат:</h3>
+            <div id="readResult">Здесь появится содержимое data.txt</div>
+        </div>
+    </div>
+
+    <script>
+        // Отправка данных
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('text').value;
+            const formData = new FormData();
+            formData.append('text', text);
+
+            try {
+                const resp = await fetch('/send', { method: 'POST', body: formData });
+                const data = await resp.json();
+                document.getElementById('sendResult').textContent =
+                    data.status === 'success' ? '✅ Данные отправлены!' : '❌ Ошибка';
+            } catch (err) {
+                document.getElementById('sendResult').textContent = '❌ Ошибка соединения';
+            }
+        });
+
+        // Чтение данных
+        document.getElementById('readBtn').addEventListener('click', async () => {
+            try {
+                const resp = await fetch('/read');
+                const data = await resp.json();
+                if (data.status === 'success') {
+                    document.getElementById('readResult').textContent =
+                        data.data || 'Файл пуст';
+                } else {
+                    document.getElementById('readResult').textContent = '❌ Ошибка чтения';
+                }
+            } catch (err) {
+                document.getElementById('readResult').textContent = '❌ Ошибка соединения';
+            }
+        });
+    </script>
+</body>
+</html>
+
+<!-- Frontedn 1.0 -->
+<!-- <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frontend 1.0</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
@@ -41,4 +126,4 @@
         });
     </script>
 </body>
-</html>
+</html> -->
